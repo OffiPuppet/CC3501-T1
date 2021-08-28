@@ -25,6 +25,22 @@ def crear_dama(x,y,r,g,b,radius):
     
     return numpy.array(circle, dtype = numpy.float32)
 
+def crear_tablero():
+
+    # Defining locations and colors for each vertex
+    
+    vertexData = numpy.array([
+    #   positions    colors
+        -0.5,  0.5, 1.0, 0.0, 0.0, # top-1
+         -0.1,  0.5, 1.0, 0.0, 0.0, # top-right
+         
+         0.5, -0.5, 0.0, 0.0, 1.0, # bottom-right
+    # It is important to use 32 bits data
+        ], dtype = numpy.float32)
+
+    size = tr.scale()
+
+
 if __name__ == "__main__":
 
     # Initialize glfw
@@ -42,7 +58,8 @@ if __name__ == "__main__":
 
     glfw.make_context_current(window)
 
-    dama = crear_dama(0.5,0.0, 0.0, 1.0, 0.0, 0.2)
+    dama = crear_dama(0.5,0.0, 1.0, 0.5, 0.0, 0.05)
+    dama1 = crear_dama(0.0,0.0, 1.0, 0.0, 0.0, 0.1)
 
     # Defining shaders for our pipeline
     vertex_shader = """
@@ -83,6 +100,10 @@ if __name__ == "__main__":
     glBindBuffer(GL_ARRAY_BUFFER, vboDama)
     glBufferData(GL_ARRAY_BUFFER, len(dama) * SIZE_IN_BYTES, dama, GL_STATIC_DRAW)
 
+    vboDama1 = glGenBuffers(1)
+    glBindBuffer(GL_ARRAY_BUFFER, vboDama1)
+    glBufferData(GL_ARRAY_BUFFER, len(dama1) * SIZE_IN_BYTES, dama1, GL_STATIC_DRAW)
+
     # Telling OpenGL to use our shader program
     glUseProgram(shaderProgram)
 
@@ -99,9 +120,19 @@ if __name__ == "__main__":
     color = glGetAttribLocation(shaderProgram, "color")
     glVertexAttribPointer(color, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(12))
     glEnableVertexAttribArray(color)
+
+    glBindBuffer(GL_ARRAY_BUFFER, vboDama1)
+    position = glGetAttribLocation(shaderProgram, "position")
+    glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(0))
+    glEnableVertexAttribArray(position)
+
+    color = glGetAttribLocation(shaderProgram, "color")
+    glVertexAttribPointer(color, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(12))
+    glEnableVertexAttribArray(color)
     
     # It renders a scene using the active shader program (pipeline) and the active VAO (shapes)
     glDrawArrays(GL_TRIANGLES, 0, int(len(dama)/6))
+    glDrawArrays(GL_TRIANGLES, 0, int(len(dama1)/6))
 
     # Moving our draw to the active color buffer
     glfw.swap_buffers(window)
