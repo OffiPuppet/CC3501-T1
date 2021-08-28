@@ -38,7 +38,7 @@ def crear_tablero():
     # It is important to use 32 bits data
         ], dtype = numpy.float32)
 
-    size = tr.scale()
+    size = tr.scale(0.5)
 
 
 if __name__ == "__main__":
